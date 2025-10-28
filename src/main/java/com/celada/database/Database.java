@@ -43,6 +43,24 @@ public class Database {
                     .build()
     );
 
+    public static Flux<Videogame> fluxFallback = Flux.just(
+            Videogame.builder()
+                    .name("Fallback data 1")
+                    .price(19.99)
+                    .console(Console.ALL)
+                    .build(),
+            Videogame.builder()
+                    .name("Fallback data 2")
+                    .price(19.99)
+                    .console(Console.ALL)
+                    .build(),
+            Videogame.builder()
+                    .name("Fallback data 3")
+                    .price(29.99)
+                    .console(Console.ALL)
+                    .build()
+    );
+
     private static List<Videogame> videogames() {
         return Arrays.asList(
                 Videogame.builder()

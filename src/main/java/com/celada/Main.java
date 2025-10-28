@@ -1,5 +1,6 @@
 package com.celada;
 
+import com.celada.error.FallbackService;
 import com.celada.error.HandleDatabaseVideogame;
 import com.celada.pipeline.PipelineAllComments;
 import com.celada.pipeline.PipelineSumAllPricesInDiscount;
@@ -59,6 +60,9 @@ public class Main {
                 .subscribe(v -> log.info(v.toString()));
 
         HandleDatabaseVideogame.handleDatabaseVideogamesDefault()
+                .subscribe(v -> log.info(v.toString()));
+
+        FallbackService.callFallback()
                 .subscribe(v -> log.info(v.toString()));
     }
 }
