@@ -1,5 +1,6 @@
 package com.celada;
 
+import com.celada.callback.CallbackExample;
 import com.celada.error.FallbackService;
 import com.celada.error.HandleDatabaseVideogame;
 import com.celada.pipeline.PipelineAllComments;
@@ -40,6 +41,8 @@ public class Main {
 
         combinedFlux.map(String::toLowerCase).doOnNext(log::info).subscribe();
 
+        log.info("------- Zip Example -------");
+
         // Call MS shipments
         Flux<String> shipments = Flux.just("Shipment 1", "Shipment 2", "Shipment 3", "Shipment 4").delayElements(Duration.ofMillis(120));
         Flux<String> warehouse = Flux.just("Warehouse 1", "Warehouse 2", "Warehouse 3").delayElements(Duration.ofMillis(50));
@@ -56,13 +59,26 @@ public class Main {
 
         reports2.doOnNext(log::info).blockLast();
 
+        log.info("------- Handle Example -------");
+
         HandleDatabaseVideogame.handleDatabaseVideogames()
                 .subscribe(v -> log.info(v.toString()));
+
+        log.info("------- Handle Default Example -------");
 
         HandleDatabaseVideogame.handleDatabaseVideogamesDefault()
                 .subscribe(v -> log.info(v.toString()));
 
+        log.info("------- Fallback Example -------");
+
         FallbackService.callFallback()
                 .subscribe(v -> log.info(v.toString()));
+
+        log.info("------- Callback Example -------");
+
+        CallbackExample.callbacks()
+                .subscribe(data -> log.debug(data.getName()),
+                        error -> log.error(error.getMessage()),
+                        () -> log.debug("Finally"));
     }
 }
