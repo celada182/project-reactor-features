@@ -1,14 +1,18 @@
 package com.celada;
 
 import com.celada.callback.CallbackExample;
+import com.celada.database.Database;
 import com.celada.error.FallbackService;
 import com.celada.error.HandleDatabaseVideogame;
+import com.celada.models.Console;
+import com.celada.models.Videogame;
 import com.celada.pipeline.PipelineAllComments;
 import com.celada.pipeline.PipelineSumAllPricesInDiscount;
 import com.celada.pipeline.PipelineTopSelling;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 
 import java.time.Duration;
 
@@ -80,5 +84,26 @@ public class Main {
                 .subscribe(data -> log.debug(data.getName()),
                         error -> log.error(error.getMessage()),
                         () -> log.debug("Finally"));
+
+        log.info("------- Context Example -------");
+        Database.getDataAsFlux()
+                .filterWhen(vg -> Mono.deferContextual(ctx -> {
+                    var userId = ctx.getOrDefault("userId", "0");
+
+                    if (userId.startsWith("1")) {
+                        return Mono.just(videogameForConsole(vg, Console.XBOX));
+                    } else if (userId.startsWith("2")) {
+                        return Mono.just(videogameForConsole(vg, Console.PLAYSTATION));
+                    } else {
+                        return Mono.just(false);
+                    }
+                }))
+                // Context always before subscribe
+                .contextWrite(Context.of("userId", "10020"))
+                .subscribe(v -> log.info("Videogame: {} Console: {}", v.getName(), v.getConsole()));
+    }
+
+    private static boolean videogameForConsole(Videogame videogame, Console console) {
+        return videogame.getConsole() == console || videogame.getConsole() == Console.ALL;
     }
 }
