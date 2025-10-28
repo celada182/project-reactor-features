@@ -18,7 +18,7 @@ import java.time.Duration;
 
 @Slf4j
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         // Publisher
         Mono<String> mono = Mono.just("Hello").doOnNext(v -> log.info("[onNext]: {}", v)).doOnSuccess(v -> log.info("[onSuccess]: {}", v)).doOnError(error -> log.info("[onError]: " + error.getMessage()));
@@ -101,6 +101,35 @@ public class Main {
                 // Context always before subscribe
                 .contextWrite(Context.of("userId", "10020"))
                 .subscribe(v -> log.info("Videogame: {} Console: {}", v.getName(), v.getConsole()));
+
+        log.info("------- Cold Publisher Example -------");
+
+        Flux<Integer> coldPublisher = Flux.range(1, 10);
+        log.info("Cold publisher");
+        log.info("Subs 1 subscribed");
+        coldPublisher.subscribe(n -> log.info("s1: {}", n));
+        log.info("Subs 2 subscribed");
+        coldPublisher.subscribe(n -> log.info("s2: {}", n));
+        log.info("Subs 3 subscribed");
+        coldPublisher.subscribe(n -> log.info("s3: {}", n));
+
+        log.info("------- Hot Publisher Example -------");
+
+        Flux<Long> hotPublisher = Flux.interval(Duration.ofSeconds(1))
+                .publish()
+                // Wait for one sub to emit data
+                .autoConnect();
+        log.info("Hot publisher");
+        log.info("Subs 4 subscribed");
+        hotPublisher.subscribe(n -> log.info("s4: {}", n));
+        Thread.sleep(Duration.ofSeconds(2));
+        log.info("Subs 5 subscribed");
+        hotPublisher.subscribe(n -> log.info("s5: {}", n));
+        Thread.sleep(Duration.ofSeconds(1));
+        log.info("Subs 6 subscribed");
+        hotPublisher.subscribe(n -> log.info("s6: {}", n));
+        Thread.sleep(Duration.ofSeconds(10));
+
     }
 
     private static boolean videogameForConsole(Videogame videogame, Console console) {
