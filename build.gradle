@@ -10,8 +10,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
     compileOnly 'org.projectlombok:lombok:1.18.42'
     annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
@@ -22,6 +20,11 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:3.0.0-alpha1'
     implementation 'org.apache.logging.log4j:log4j-core:3.0.0-alpha1'
     implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:3.0.0-alpha1'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'io.projectreactor:reactor-test:3.7.3'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
 }
 
 test {
